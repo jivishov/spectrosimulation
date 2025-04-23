@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AP Chemistry - Spectrophotometry Simulation</title>
+    <!-- Link the CSS file -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>Spectrophotometry Simulation (Beer's Law)</h1>
+
+    <div id="main-container">
+        <div id="instructions-panel" class="panel">
+            <h3>Instructions:</h3>
+            <p id="instruction-text">Loading simulation...</p>
+        </div>
+
+        <div id="simulation-area">
+            <!-- Canvas for the main lab simulation -->
+            <canvas id="lab-canvas" width="800" height="450"></canvas>
+        </div>
+
+        <div id="controls-panel" class="panel">
+            <h4>Controls</h4>
+            <button id="undo-button" disabled>Undo Last Step</button>
+            <div id="feedback-message"></div>
+        </div>
+
+        <div id="data-panel" class="panel">
+            <h4>Data Table & Results</h4>
+            <table id="results-table">
+                <thead>
+                    <tr>
+                        <th>Solution</th>
+                        <th>Dilution (Stock/Water)</th>
+                        <th>Concentration (µM)</th>
+                        <th>Measured %T</th>
+                        <th>T (Decimal)</th>
+                        <th>Absorbance (-log T)</th>
+                    </tr>
+                </thead>
+                <tbody id="results-tbody">
+                    <!-- Data rows will be added here by JS -->
+                </tbody>
+            </table>
+            <p id="slope-display" style="margin-top: 10px; font-weight: bold;"></p>
+            <p id="unknown-result" style="margin-top: 5px;"></p>
+        </div>
+
+        <div id="graph-panel" class="panel">
+            <h4>Graph: Absorbance vs. Concentration</h4>
+            <!-- Canvas for the graph -->
+            <canvas id="graph-canvas" width="300" height="200"></canvas>
+        </div>
+
+    </div> <!-- end #main-container -->
+
+    <!-- Link the JavaScript file at the end of the body -->
+    <script src="simulation.js"></script>
+</body>
+</html>
