@@ -122,7 +122,126 @@ document.addEventListener('DOMContentLoaded', () => {
     function drawBottle(obj, isHighlighted) { labCtx.save(); labCtx.fillStyle = COLORS.glass; labCtx.fillRect(obj.x, obj.y, obj.width, obj.height); labCtx.strokeRect(obj.x, obj.y, obj.width, obj.height); labCtx.fillRect(obj.x + obj.width * 0.3, obj.y - obj.height * 0.1, obj.width * 0.4, obj.height * 0.1); labCtx.strokeRect(obj.x + obj.width * 0.3, obj.y - obj.height * 0.1, obj.width * 0.4, obj.height * 0.1); const liquidHeight = obj.height * (obj.currentVolume / obj.maxVolume) * 0.95; labCtx.fillStyle = getLiquidColor(obj.concentration); labCtx.fillRect(obj.x + 2, obj.y + obj.height - liquidHeight, obj.width - 4, liquidHeight); labCtx.fillStyle = COLORS.label; labCtx.textAlign = 'center'; labCtx.font = '10px sans-serif'; labCtx.fillText(obj.label, obj.x + obj.width / 2, obj.y + obj.height + 12); if (isHighlighted) highlightObjectBorder(obj); labCtx.restore(); }
     function drawTestTube(obj, isHighlighted) { labCtx.save(); labCtx.strokeStyle = '#555'; labCtx.fillStyle = 'rgba(230, 230, 230, 0.5)'; labCtx.fillRect(obj.x, obj.y, obj.width, obj.height); labCtx.strokeRect(obj.x, obj.y, obj.width, obj.height); labCtx.beginPath(); labCtx.arc(obj.x + obj.width / 2, obj.y + obj.height, obj.width / 2, 0, Math.PI); labCtx.stroke(); labCtx.fillStyle = 'rgba(230, 230, 230, 0.5)'; labCtx.fill(); if (obj.currentVolume > 0 && obj.maxVolume > 0) { const liquidLevelRatio = obj.currentVolume / obj.maxVolume; const liquidLevel = obj.height * liquidLevelRatio; const liquidColor = getLiquidColor(obj.concentration); labCtx.fillStyle = liquidColor; const tubeRadius = obj.width / 2; const liquidTopY = obj.y + obj.height - liquidLevel; const rectFillHeight = Math.max(0, liquidLevel - tubeRadius); if (rectFillHeight > 0) { labCtx.fillRect(obj.x + 1, liquidTopY, obj.width - 2, rectFillHeight); } const arcFillHeight = Math.min(liquidLevel, tubeRadius); if (arcFillHeight > 0) { const angle = Math.acos(Math.max(-1, Math.min(1, 1 - arcFillHeight / tubeRadius))); const startAngle = Math.PI - angle; const endAngle = angle; labCtx.beginPath(); labCtx.arc(obj.x + tubeRadius, obj.y + obj.height, tubeRadius, startAngle, endAngle); const arcStartX = obj.x + tubeRadius - Math.sin(angle) * tubeRadius; const arcEndX = obj.x + tubeRadius + Math.sin(angle) * tubeRadius; const connectY = liquidTopY + rectFillHeight; // Y-level where arc connects to rectangle (or top if no rect part)
                  labCtx.lineTo(arcEndX, connectY); labCtx.lineTo(arcStartX, connectY); labCtx.closePath(); labCtx.fill(); } } labCtx.fillStyle = COLORS.label; labCtx.textAlign = 'center'; labCtx.font = '10px sans-serif'; labCtx.fillText(obj.label, obj.x + obj.width / 2, obj.y + obj.height + 15 + obj.width/2); if (isHighlighted) highlightObjectBorder(obj); labCtx.restore(); }
-    function drawPipette(obj, isHighlighted) { labCtx.save(); labCtx.strokeStyle = '#333'; labCtx.lineWidth = 1; const bulbRadius = 10; const bulbY = obj.y + bulbRadius; const bodyStartY = bulbY + bulbRadius * 0.8; const bodyEndY = bodyStartY + obj.height; const tipLength = 10; const tipEndY = bodyEndY + tipLength; const pipetteTotalHeight = tipEndY - obj.y; labCtx.beginPath(); labCtx.arc(obj.x + obj.width / 2, bulbY, bulbRadius, 0, 2 * Math.PI); labCtx.stroke(); labCtx.strokeRect(obj.x, bodyStartY, obj.width, obj.height); labCtx.beginPath(); labCtx.moveTo(obj.x, bodyEndY); labCtx.lineTo(obj.x + obj.width / 2, tipEndY); labCtx.lineTo(obj.x + obj.width, bodyEndY); labCtx.stroke(); if (obj.currentVolume > 0) { const liquidHeightRatio = obj.currentVolume / obj.maxVolume; const liquidBodyHeight = obj.height * liquidHeightRatio; const liquidStartY = bodyEndY - liquidBodyHeight; const color = getLiquidColor(obj.contentsConcentration); labCtx.fillStyle = color; labCtx.fillRect(obj.x + 1, liquidStartY, obj.width - 2, liquidBodyHeight); labCtx.beginPath(); labCtx.moveTo(obj.x + 1, bodyEndY); labCtx.lineTo(obj.x + obj.width / 2, tipEndY); labCtx.lineTo(obj.x + obj.width - 1, bodyEndY); labCtx.closePath(); labCtx.fill(); } if (isHighlighted) highlightObjectBorder(obj, 0, 0, obj.width, pipetteTotalHeight); labCtx.restore(); }
+    //function drawPipette(obj, isHighlighted) { labCtx.save(); labCtx.strokeStyle = '#333'; labCtx.lineWidth = 1; const bulbRadius = 10; const bulbY = obj.y + bulbRadius; const bodyStartY = bulbY + bulbRadius * 0.8; const bodyEndY = bodyStartY + obj.height; const tipLength = 10; const tipEndY = bodyEndY + tipLength; const pipetteTotalHeight = tipEndY - obj.y; labCtx.beginPath(); labCtx.arc(obj.x + obj.width / 2, bulbY, bulbRadius, 0, 2 * Math.PI); labCtx.stroke(); labCtx.strokeRect(obj.x, bodyStartY, obj.width, obj.height); labCtx.beginPath(); labCtx.moveTo(obj.x, bodyEndY); labCtx.lineTo(obj.x + obj.width / 2, tipEndY); labCtx.lineTo(obj.x + obj.width, bodyEndY); labCtx.stroke(); if (obj.currentVolume > 0) { const liquidHeightRatio = obj.currentVolume / obj.maxVolume; const liquidBodyHeight = obj.height * liquidHeightRatio; const liquidStartY = bodyEndY - liquidBodyHeight; const color = getLiquidColor(obj.contentsConcentration); labCtx.fillStyle = color; labCtx.fillRect(obj.x + 1, liquidStartY, obj.width - 2, liquidBodyHeight); labCtx.beginPath(); labCtx.moveTo(obj.x + 1, bodyEndY); labCtx.lineTo(obj.x + obj.width / 2, tipEndY); labCtx.lineTo(obj.x + obj.width - 1, bodyEndY); labCtx.closePath(); labCtx.fill(); } if (isHighlighted) highlightObjectBorder(obj, 0, 0, obj.width, pipetteTotalHeight); labCtx.restore(); }
+        // --- NEW Realistic Pipette Drawing Function ---
+    function drawPipette(obj, isHighlighted) {
+        labCtx.save();
+        labCtx.strokeStyle = '#333'; // Default outline color
+        labCtx.lineWidth = 1;
+
+        // --- Define geometry based on obj properties ---
+        // obj.height is the BODY height, obj.width is BODY width from initializeState
+        const bodyStartX = obj.x;
+        const bodyStartY = obj.y; // Body starts at obj.y
+        const bodyEndY = bodyStartY + obj.height;
+
+        // Bulb positioned ABOVE the body
+        const bulbRadius = obj.width * 2.0; // Make bulb proportionally wider than body
+        const bulbCenterX = bodyStartX + obj.width / 2;
+        const bulbCenterY = bodyStartY - bulbRadius * 0.7; // Position bulb center slightly above body start
+        const bulbTopY = bulbCenterY - bulbRadius; // Calculate top Y of the bulb
+
+        // Tip positioned BELOW the body
+        const tipLength = 18; // Make tip distinct and tapered
+        const tipEndY = bodyEndY + tipLength;
+
+        // Calculate overall visual bounds for highlighting
+        const pipetteTotalHeight = tipEndY - bulbTopY;
+        const pipetteTotalVisualWidth = bulbRadius * 2;
+        const pipetteVisualX = bulbCenterX - bulbRadius;
+
+        // --- Draw Bulb ---
+        labCtx.fillStyle = 'rgba(210, 210, 220, 0.6)'; // Slightly bluish bulb glass
+        labCtx.beginPath();
+        labCtx.arc(bulbCenterX, bulbCenterY, bulbRadius, 0, Math.PI * 2); // Simple circle bulb
+        labCtx.closePath();
+        labCtx.fill();
+        labCtx.stroke();
+
+        // --- Draw Body ---
+        labCtx.fillStyle = 'rgba(230, 230, 240, 0.5)'; // Glassy body
+        labCtx.fillRect(bodyStartX, bodyStartY, obj.width, obj.height);
+        labCtx.strokeRect(bodyStartX, bodyStartY, obj.width, obj.height);
+
+        // --- Draw Graduations ---
+        labCtx.strokeStyle = '#778'; // Muted color for marks
+        labCtx.lineWidth = 0.5;
+        const numMarks = 10; // For 10mL capacity assumed
+        const majorMarkInterval = 5; // Mark 5 and 10
+        labCtx.font = '6px sans-serif'; // Small font for numbers
+        labCtx.fillStyle = '#445'; // Darker color for numbers
+        labCtx.textAlign = 'right';
+
+        for (let i = 1; i <= numMarks; i++) {
+            const markY = bodyEndY - (i / numMarks) * obj.height; // Calculate Y from bottom up
+            const isMajorMark = (i % majorMarkInterval === 0) || i === numMarks;
+            const markWidth = isMajorMark ? obj.width : obj.width * 0.6; // Longer major marks
+            const markX = bodyStartX + (obj.width - markWidth) / 2; // Center marks
+
+            labCtx.beginPath();
+            labCtx.moveTo(markX, markY);
+            labCtx.lineTo(markX + markWidth, markY);
+            labCtx.stroke();
+
+            // Add numbers for major marks (e.g., 5, 10)
+            if (isMajorMark) {
+                labCtx.fillText(i.toString(), bodyStartX - 2, markY + 2); // Position number to the left
+            }
+        }
+        // Reset styles
+        labCtx.lineWidth = 1;
+        labCtx.strokeStyle = '#333';
+
+        // --- Draw Tip ---
+        labCtx.fillStyle = 'rgba(230, 230, 240, 0.5)'; // Tip glass color
+        labCtx.beginPath();
+        labCtx.moveTo(bodyStartX, bodyEndY);              // Top-left of tip base
+        labCtx.lineTo(bulbCenterX, tipEndY);             // Point
+        labCtx.lineTo(bodyStartX + obj.width, bodyEndY); // Top-right of tip base
+        labCtx.closePath(); // Close the triangle
+        labCtx.fill();      // Fill the tip glass
+        labCtx.stroke();    // Outline the tip
+
+
+        // --- Draw Liquid ---
+        if (obj.currentVolume > 0) {
+            const liquidHeightRatio = obj.currentVolume / obj.maxVolume;
+            const liquidBodyHeight = obj.height * liquidHeightRatio; // Height within the body rectangle
+            const liquidTopY = bodyEndY - liquidBodyHeight; // Y coordinate of liquid surface in body
+            const color = getLiquidColor(obj.contentsConcentration);
+            labCtx.fillStyle = color;
+
+            // Liquid in body
+            // Ensure liquid doesn't go above body top (bodyStartY)
+            const actualLiquidBodyHeight = Math.max(0, bodyEndY - Math.max(bodyStartY, liquidTopY));
+            const actualLiquidBodyTopY = Math.max(bodyStartY, liquidTopY);
+            if (actualLiquidBodyHeight > 0) {
+                 labCtx.fillRect(bodyStartX + 1, actualLiquidBodyTopY, obj.width - 2, actualLiquidBodyHeight);
+            }
+
+            // Liquid in tip (fill the tip shape completely if liquid reaches the bottom of the body)
+            if (liquidTopY <= bodyEndY) { // Check if liquid level reaches the tip area
+                 labCtx.beginPath();
+                 labCtx.moveTo(bodyStartX + 1, bodyEndY); // Start slightly inside body bottom-left
+                 labCtx.lineTo(bulbCenterX, tipEndY);     // Tip point
+                 labCtx.lineTo(bodyStartX + obj.width - 1, bodyEndY); // Body bottom-right
+                 labCtx.closePath();
+                 labCtx.fill();
+            }
+        }
+
+        // --- Highlight ---
+        if (isHighlighted) {
+            // Use calculated visual bounds for the highlight box
+            highlightObjectBorder(
+                { ...obj, x: pipetteVisualX, y: bulbTopY, width: pipetteTotalVisualWidth, height: pipetteTotalHeight }, // Dummy object with visual bounds
+                0, 0, pipetteTotalVisualWidth, pipetteTotalHeight
+            );
+        }
+
+        labCtx.restore();
+    }
+    
     function drawBeaker(obj, isHighlighted) { labCtx.save(); labCtx.strokeStyle = '#555'; labCtx.lineWidth = 1; labCtx.beginPath(); labCtx.moveTo(obj.x, obj.y); labCtx.lineTo(obj.x + obj.width * 0.1, obj.y + obj.height); labCtx.lineTo(obj.x + obj.width * 0.9, obj.y + obj.height); labCtx.lineTo(obj.x + obj.width, obj.y); labCtx.lineTo(obj.x + obj.width * 1.05, obj.y - obj.height * 0.05); labCtx.lineTo(obj.x - obj.width * 0.05, obj.y - obj.height * 0.05); labCtx.closePath(); labCtx.stroke(); if (obj.currentVolume > 0) { const liquidLevelRatio = Math.min(1, obj.currentVolume / obj.maxVolume); const liquidHeight = obj.height * liquidLevelRatio; const topWidth = obj.width; const bottomWidth = obj.width * 0.8; const currentTopWidth = bottomWidth + (topWidth - bottomWidth) * liquidLevelRatio; const currentY = obj.y + obj.height - liquidHeight; const currentX = obj.x + (obj.width - currentTopWidth) / 2; labCtx.fillStyle = 'rgba(150, 150, 100, 0.5)'; labCtx.beginPath(); labCtx.moveTo(currentX, currentY); labCtx.lineTo(obj.x + obj.width * 0.1, obj.y + obj.height); labCtx.lineTo(obj.x + obj.width * 0.9, obj.y + obj.height); labCtx.lineTo(currentX + currentTopWidth, currentY); labCtx.closePath(); labCtx.fill(); } labCtx.fillStyle = COLORS.label; labCtx.textAlign = 'center'; labCtx.font = '12px sans-serif'; labCtx.fillText(obj.label, obj.x + obj.width / 2, obj.y + obj.height + 15); if (isHighlighted) highlightObjectBorder(obj); labCtx.restore(); }
     function drawSpectrophotometer(obj, isHighlighted) { labCtx.save(); labCtx.fillStyle = '#B0BEC5'; labCtx.fillRect(obj.x, obj.y, obj.width, obj.height); labCtx.strokeStyle = '#546E7A'; labCtx.strokeRect(obj.x, obj.y, obj.width, obj.height); const displayX = obj.x + 20; const displayY = obj.y + 20; const displayWidth = obj.width * 0.6; const displayHeight = obj.height * 0.4; labCtx.fillStyle = '#263238'; labCtx.fillRect(displayX, displayY, displayWidth, displayHeight); labCtx.fillStyle = '#B2FF59'; labCtx.font = 'bold 20px monospace'; labCtx.textAlign = 'right'; labCtx.fillText(spec20State.reading, displayX + displayWidth - 10, displayY + displayHeight / 2 + 8); labCtx.fillStyle = '#76FF03'; labCtx.font = '10px monospace'; labCtx.textAlign = 'left'; const modeText = spec20State.absorbanceMode ? 'Abs' : '%T'; labCtx.fillText(`${modeText} @ ${spec20State.wavelength}nm`, displayX + 5, displayY + displayHeight - 5); const slotX = obj.x + obj.width * 0.8; const slotY = obj.y + 15; const slotWidth = 30; const slotHeight = 60; labCtx.fillStyle = '#455A64'; labCtx.fillRect(slotX, slotY, slotWidth, slotHeight); labCtx.strokeRect(slotX, slotY, slotWidth, slotHeight); labCtx.fillStyle = '#78909C'; labCtx.textAlign = 'center'; labCtx.font = '9px sans-serif'; labCtx.fillText("Cuvette", slotX + slotWidth/2, slotY + slotHeight + 10); if (spec20State.cuvetteInsideId) { const cuvette = findObjectById(spec20State.cuvetteInsideId); if (cuvette) { const cuvetteDrawX = slotX + (slotWidth - cuvette.width) / 2; const cuvetteDrawY = slotY + 5; drawCuvette({ ...cuvette, x: cuvetteDrawX, y: cuvetteDrawY, isInSpec: true }, false); } } labCtx.fillStyle = '#78909C'; labCtx.strokeStyle = '#37474F'; const zb = spec20State.zeroButtonPos; labCtx.fillRect(zb.x, zb.y, zb.width, zb.height); labCtx.strokeRect(zb.x, zb.y, zb.width, zb.height); labCtx.fillStyle = '#FFF'; labCtx.font = 'bold 12px sans-serif'; labCtx.textAlign = 'center'; labCtx.fillText("Zero", zb.x + zb.width / 2, zb.y + zb.height / 2 + 4); const mb = spec20State.measureButtonPos; labCtx.fillStyle = '#78909C'; labCtx.fillRect(mb.x, mb.y, mb.width, mb.height); labCtx.strokeRect(mb.x, mb.y, mb.width, mb.height); labCtx.fillStyle = '#FFF'; labCtx.fillText("Measure", mb.x + mb.width / 2, mb.y + mb.height / 2 + 4); const modeB = spec20State.modeButtonPos; labCtx.fillStyle = '#78909C'; labCtx.fillRect(modeB.x, modeB.y, modeB.width, modeB.height); labCtx.strokeRect(modeB.x, modeB.y, modeB.width, modeB.height); labCtx.fillStyle = '#FFF'; labCtx.fillText(spec20State.absorbanceMode ? "%T" : "Abs", modeB.x + modeB.width / 2, modeB.y + modeB.height / 2 + 4); if (isHighlighted) highlightObjectBorder(obj); labCtx.restore(); }
     function drawCuvette(obj, isHighlighted) { if (obj.isInSpec && !isHighlighted) { return; } labCtx.save(); // Draw glass with background color reflecting cleanliness
