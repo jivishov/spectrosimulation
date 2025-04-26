@@ -1,0 +1,47 @@
+/* layout.css */
+/* Styles for overall page structure and panel layout */
+
+#main-container {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    justify-content: center;
+    gap: 15px;
+    max-width: 1200px;
+    width: 100%;
+}
+
+/* General Panel Style (Block) */
+.panel {
+    border: 1px solid #ccc;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Specific Panel Layouts (using IDs for unique major sections) */
+#instructions-panel {
+    width: 95%; /* Take full width in column layout */
+    min-height: 50px;
+    background-color: #e0f7fa;
+    order: -1; /* Put instructions at the top */
+}
+
+#instructions-panel h3 { /* If you add an H3 */
+    margin-top: 0;
+}
+
+#controls-panel {
+    width: 200px;
+    text-align: center;
+}
+
+#data-panel {
+    flex-grow: 1; /* Allow data table to take more space */
+    min-width: 350px;
+}
+
+#graph-panel {
+    width: 320px;
+    height: 270px; /* Fixed height to contain graph */
+}

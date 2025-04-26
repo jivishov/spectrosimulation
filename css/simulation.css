@@ -1,0 +1,22 @@
+/* simulation.css */
+/* Styles for the simulation area and canvas */
+
+#simulation-area {
+    border: 1px solid #666;
+    background-color: #fff;
+    position: relative; /* For potential absolute positioning inside */
+    /* Consider adding overflow: hidden; if elements might slightly exceed bounds */
+}
+
+/* Lab Canvas (Block) */
+.lab-canvas { /* Changed from #lab-canvas ID selector */
+    display: block; /* Remove extra space below canvas */
+    cursor: default; /* Default cursor */
+}
+
+/* Modifier for dragging state */
+/* Add class="lab-canvas--dragging" in JS instead of 'dragging' */
+.lab-canvas--dragging,
+.lab-canvas--dragging * { /* Apply to canvas and potential children */
+    cursor: grabbing !important; /* Use !important cautiously if needed */
+}
