@@ -42,8 +42,9 @@ export function getState() {
 export function setStateVariable(key, value) {
     switch (key) {
         case 'currentStep': currentStep = value; break;
-        // Avoid setting complex objects directly, use specific updaters
-        // case 'labObjects': labObjects = value; break;
+        // *** FIX: Uncommented this case to allow interaction.js to reorder the array ***
+        case 'labObjects': labObjects = value; break;
+        // Avoid setting these directly unless absolutely necessary
         // case 'dataTableData': dataTableData = value; break;
         // case 'spec20State': spec20State = value; break;
         // case 'historyStack': historyStack = value; break;
@@ -53,7 +54,7 @@ export function setStateVariable(key, value) {
         case 'feedback': feedback = value; break;
         case 'highlights': highlights = value; break;
         case 'isDragging': isDragging = value; break;
-        default: console.error("Attempted to set unknown state variable:", key);
+        default: console.error("Attempted to set unknown state variable:", key); // Error origin
     }
 }
 
@@ -61,11 +62,8 @@ export function setStateVariable(key, value) {
 export function updateLabObject(id, property, value) {
     const objIndex = labObjects.findIndex(o => o.id === id);
     if (objIndex > -1) {
-        // Create a new object copy to potentially help with change detection if needed
-        // labObjects[objIndex] = { ...labObjects[objIndex], [property]: value };
         // Direct mutation is simpler for this simulation:
         labObjects[objIndex][property] = value;
-         // console.log(`Updated ${id}: ${property}=${JSON.stringify(value)}`);
     } else {
         console.error(`Cannot update object: ID ${id} not found.`);
     }
@@ -170,26 +168,23 @@ function cloneState() {
 
 // Restore state from a cloned history item
 export function restoreState(stateToRestore) {
-    // Directly assign properties from the cloned state
     currentStep = stateToRestore.currentStep;
-    labObjects = stateToRestore.labObjects; // Assumes state.labObjects was deep cloned
-    dataTableData = stateToRestore.dataTableData; // Assumes state.dataTableData was deep cloned
-    spec20State = stateToRestore.spec20State; // Assumes state.spec20State was deep cloned
-    highlights = []; // Reset highlights on restore
-    // Reset interaction state potentially affected by undo
+    labObjects = stateToRestore.labObjects;
+    dataTableData = stateToRestore.dataTableData;
+    spec20State = stateToRestore.spec20State;
+    highlights = [];
     draggedObject = null;
     isDragging = false;
-     // Reset feedback to a neutral state after undo
-     feedback = { message: 'Undo successful.', type: 'info' };
+    feedback = { message: 'Undo successful.', type: 'info' };
 }
 
 // Save current state to history stack
 export function saveState() {
     if (historyStack.length > 20) {
-        historyStack.shift(); // Limit history size
+        historyStack.shift();
     }
-    historyStack.push(cloneState()); // Push a deep clone
-    if(undoButtonRef) undoButtonRef.disabled = false; // Enable undo button
+    historyStack.push(cloneState());
+    if(undoButtonRef) undoButtonRef.disabled = false;
 }
 
 // Find an object in the labObjects array by its ID
@@ -202,5 +197,5 @@ export function popHistory() {
     if (historyStack.length > 0) {
         return historyStack.pop();
     }
-    return null; // Return null if history is empty
+    return null;
 }
