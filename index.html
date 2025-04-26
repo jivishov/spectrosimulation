@@ -4,8 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AP Chemistry - Spectrophotometry Simulation</title>
-    <!-- Link the CSS file -->
-    <link rel="stylesheet" href="style.css">
+
+    <!-- Link the CSS module files from the css/ folder -->
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/simulation.css">
+
+    <style>
+        /* Optional: Add a small fallback style if CSS fails to load */
+        body { font-family: sans-serif; }
+        .panel { border: 1px solid lightgray; padding: 5px; margin-bottom: 10px; }
+    </style>
 </head>
 <body>
 
@@ -14,37 +24,46 @@
     <div id="main-container">
         <div id="instructions-panel" class="panel">
             <h3>Instructions:</h3>
+            <!-- ID kept for JS targeting -->
             <p id="instruction-text">Loading simulation...</p>
         </div>
 
         <div id="simulation-area">
             <!-- Canvas for the main lab simulation -->
-            <canvas id="lab-canvas" width="800" height="450"></canvas>
+            <!-- ID kept for JS targeting, add class for CSS -->
+            <canvas id="lab-canvas" class="lab-canvas" width="800" height="450"></canvas>
         </div>
 
         <div id="controls-panel" class="panel">
             <h4>Controls</h4>
-            <button id="undo-button" disabled>Undo Last Step</button>
-            <div id="feedback-message"></div>
+            <!-- ID kept for JS targeting, add class for CSS -->
+            <button id="undo-button" class="button" disabled>Undo Last Step</button>
+            <!-- Use class for CSS and JS selection -->
+            <div class="feedback"></div>
         </div>
 
         <div id="data-panel" class="panel">
             <h4>Data Table & Results</h4>
-            <table id="results-table">
+            <!-- Use class for CSS -->
+            <table class="data-table">
                 <thead>
                     <tr>
-                        <th>Solution</th>
-                        <th>Dilution (Stock/Water)</th>
-                        <th>Concentration (µM)</th>
-                        <th>Measured %T</th>
-                        <th>T (Decimal)</th>
-                        <th>Absorbance (-log T)</th>
+                        <!-- Add BEM classes to header cells -->
+                        <th class="data-table__header data-table__cell">Solution</th>
+                        <th class="data-table__header data-table__cell">Dilution (Stock/Water)</th>
+                        <th class="data-table__header data-table__cell">Concentration (µM)</th>
+                        <th class="data-table__header data-table__cell">Measured %T</th>
+                        <th class="data-table__header data-table__cell">T (Decimal)</th>
+                        <th class="data-table__header data-table__cell">Absorbance (-log T)</th>
                     </tr>
                 </thead>
+                <!-- ID kept for JS targeting tbody -->
                 <tbody id="results-tbody">
                     <!-- Data rows will be added here by JS -->
+                    <!-- JS needs to add class="data-table__cell" to generated <td> elements -->
                 </tbody>
             </table>
+            <!-- IDs kept for JS targeting -->
             <p id="slope-display" style="margin-top: 10px; font-weight: bold;"></p>
             <p id="unknown-result" style="margin-top: 5px;"></p>
         </div>
@@ -52,12 +71,14 @@
         <div id="graph-panel" class="panel">
             <h4>Graph: Absorbance vs. Concentration</h4>
             <!-- Canvas for the graph -->
+            <!-- ID kept for JS targeting -->
             <canvas id="graph-canvas" width="300" height="200"></canvas>
         </div>
 
     </div> <!-- end #main-container -->
 
-    <!-- Link the JavaScript file at the end of the body -->
-    <script src="main.js"></script>
+    <!-- Link the main JavaScript module from the js/ folder -->
+    <script type="module" src="js/main.js"></script>
+
 </body>
 </html>
