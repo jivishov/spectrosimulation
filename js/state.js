@@ -1,6 +1,7 @@
 // state.js
-import * as config from './config.js'; // Needed for initializeState
-import { calculateConcentration } from './actions.js'; // Needed for initializeState
+import * as config from './config.js';
+// Use direct import for simplicity, ensure no immediate circular calls during load
+import { calculateConcentration } from './actions.js';
 
 // Module-scoped state variables
 let currentStep = 0;
@@ -15,8 +16,13 @@ let feedback = { message: '', type: 'info' };
 let highlights = [];
 let isDragging = false;
 
-// Function to get the current state snapshot
+// Store undo button reference passed from main.js
+let undoButtonRef = null;
+
+// Function to get the current state snapshot (read-only copy recommended if modifying externally)
 export function getState() {
+    // Return a copy or direct reference depending on usage patterns
+    // Direct reference is simpler here as modifications happen via exported functions
     return {
         currentStep,
         labObjects,
@@ -32,21 +38,22 @@ export function getState() {
     };
 }
 
-// Function to set specific state variables (use sparingly, prefer dedicated functions)
+// Function to set specific top-level state variables
 export function setStateVariable(key, value) {
     switch (key) {
         case 'currentStep': currentStep = value; break;
-        case 'labObjects': labObjects = value; break; // Use with care, might need deep copy
-        case 'dataTableData': dataTableData = value; break; // Use with care
-        case 'spec20State': spec20State = value; break; // Use with care
-        case 'historyStack': historyStack = value; break; // Use with care
+        // Avoid setting complex objects directly, use specific updaters
+        // case 'labObjects': labObjects = value; break;
+        // case 'dataTableData': dataTableData = value; break;
+        // case 'spec20State': spec20State = value; break;
+        // case 'historyStack': historyStack = value; break;
         case 'draggedObject': draggedObject = value; break;
         case 'dragOffsetX': dragOffsetX = value; break;
         case 'dragOffsetY': dragOffsetY = value; break;
         case 'feedback': feedback = value; break;
         case 'highlights': highlights = value; break;
         case 'isDragging': isDragging = value; break;
-        default: console.error("Unknown state variable:", key);
+        default: console.error("Attempted to set unknown state variable:", key);
     }
 }
 
@@ -54,8 +61,11 @@ export function setStateVariable(key, value) {
 export function updateLabObject(id, property, value) {
     const objIndex = labObjects.findIndex(o => o.id === id);
     if (objIndex > -1) {
+        // Create a new object copy to potentially help with change detection if needed
+        // labObjects[objIndex] = { ...labObjects[objIndex], [property]: value };
+        // Direct mutation is simpler for this simulation:
         labObjects[objIndex][property] = value;
-        // console.log(`Updated ${id}: ${property}=${value}`);
+         // console.log(`Updated ${id}: ${property}=${JSON.stringify(value)}`);
     } else {
         console.error(`Cannot update object: ID ${id} not found.`);
     }
@@ -67,7 +77,7 @@ export function updateDataTableRow(id, property, value) {
      if (rowIndex > -1) {
          dataTableData[rowIndex][property] = value;
      } else {
-         console.error(`Cannot update data table: ID ${id} not found.`);
+         console.error(`Cannot update data table: Row ID ${id} not found.`);
      }
 }
 // Function to update a property in spec20State
@@ -79,7 +89,10 @@ export function updateSpec20State(property, value) {
     }
 }
 
-export function initializeState() {
+// Accept undo button during initialization
+export function initializeState(undoButtonElement) {
+    undoButtonRef = undoButtonElement; // Store reference
+
     currentStep = 0;
     feedback = { message: 'Welcome! Follow the instructions.', type: 'info' };
     historyStack = [];
@@ -148,43 +161,46 @@ export function initializeState() {
     console.log("State initialized.");
 }
 
-
-export function cloneState() {
-    // Deep clone is important here
+// Deep clone state for history
+function cloneState() {
     return JSON.parse(JSON.stringify({
         currentStep, labObjects, dataTableData, spec20State
     }));
 }
 
-export function restoreState(state) {
+// Restore state from a cloned history item
+export function restoreState(stateToRestore) {
     // Directly assign properties from the cloned state
-    currentStep = state.currentStep;
-    labObjects = state.labObjects; // Assumes state.labObjects is a deep clone
-    dataTableData = state.dataTableData; // Assumes state.dataTableData is a deep clone
-    spec20State = state.spec20State; // Assumes state.spec20State is a deep clone
+    currentStep = stateToRestore.currentStep;
+    labObjects = stateToRestore.labObjects; // Assumes state.labObjects was deep cloned
+    dataTableData = stateToRestore.dataTableData; // Assumes state.dataTableData was deep cloned
+    spec20State = stateToRestore.spec20State; // Assumes state.spec20State was deep cloned
     highlights = []; // Reset highlights on restore
     // Reset interaction state potentially affected by undo
     draggedObject = null;
     isDragging = false;
+     // Reset feedback to a neutral state after undo
+     feedback = { message: 'Undo successful.', type: 'info' };
 }
 
-export function saveState(undoButtonElement) {
+// Save current state to history stack
+export function saveState() {
     if (historyStack.length > 20) {
-        historyStack.shift();
+        historyStack.shift(); // Limit history size
     }
-    // Use the internal cloneState which deep clones the necessary parts
-    historyStack.push(cloneState());
-    if(undoButtonElement) undoButtonElement.disabled = false;
+    historyStack.push(cloneState()); // Push a deep clone
+    if(undoButtonRef) undoButtonRef.disabled = false; // Enable undo button
 }
 
+// Find an object in the labObjects array by its ID
 export function findObjectById(id) {
     return labObjects.find(obj => obj.id === id);
 }
 
-// Add a function to pop from history stack for the undo action
+// Pop the last state from the history stack for undo operations
 export function popHistory() {
     if (historyStack.length > 0) {
         return historyStack.pop();
     }
-    return null;
+    return null; // Return null if history is empty
 }
